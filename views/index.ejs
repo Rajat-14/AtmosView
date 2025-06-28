@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Atmos-View</title>
+    <script src="https://kit.fontawesome.com/bfd673e750.js" crossorigin="anonymous"></script>
+    <link href='https://cdn.boxicons.com/fonts/basic/boxicons.min.css' rel='stylesheet'>
+    <link href="/styles.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h2>Weather</h2>
+            <form class="weather-input" method="post" action="/submit">
+                <input type="text" name="city" id="city_input" placeholder="Enter city">
+
+                <input type="hidden" name="lat" id="lat">
+                <input type="hidden" name="lon" id="lon">
+
+                <button type="submit" id="searchBtn">
+                    <i class="fa-solid fa-magnifying-glass"></i> Search
+                </button>
+                <button type="button" id="locationBtn">
+                    <i class="fa-solid fa-location-crosshairs"></i> Current Location
+                </button>
+            </form>
+        </div>
+        <div class="weather-data">
+            <div class="weather-left">
+                <div class="card">
+                    <div class="current-weather">
+                        <div class="details">
+                            <p>Now</p>
+                            <%if(locals.weatherData){%>
+                                <h2><%= (weatherData.main.temp-273.15).toFixed(1) %> &deg;C</h2>
+                                <p><%=weatherData.weather[0].main%></p>
+                            <%} else{%>
+                                <h2>__&deg;C</h2>
+                                <p>____</p>
+                            <%}%>
+                            
+                        </div>
+                        <div class="weather-icon">
+                            <%if(locals.weatherData){%>
+                                <img src="https://openweathermap.org/img/wn/<%= weatherData.weather[0].icon %>@2x.png">
+                            <%} else{%>
+                                <img src="https://openweathermap.org/img/wn/04d@2x.png">
+                            <%}%>
+                            
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="card-footer">
+                        <%if(locals.weatherData){%>
+                            <%const formattedDate = new Date(weatherData.dt * 1000).toLocaleDateString('en-GB', {weekday: 'short',day: '2-digit',month: 'short',year: 'numeric'});%>
+                            <p><i class="fa-solid fa-calendar"></i> <%= formattedDate %></p>
+                        <%} else{%>
+                            <p><i class="fa-solid fa-calendar"></i>____</p>
+                        <%}%>
+                        
+                        <%if(locals.city && locals.weatherData){%>
+                            <p><i class="fa-solid fa-location-dot"></i> <%= city %>,<%= weatherData.sys.country %></p>
+                        <%} else{%>
+                            <p><i class="fa-solid fa-location-dot"></i>_____</p>
+                        <%}%>
+                        
+                    </div>
+                </div>
+                <div class="card">
+                    <h2>5 days Forecast</h2>
+                    <div class="day-forecast">
+                        <% if (locals.forecast && locals.forecast.list) { 
+                            for (let i = 1; i <= 5; i++) {
+                              const entry = locals.forecast.list[i];
+                              const icon = entry.weather[0].icon;
+                              const tempC = (entry.temp.day - 273.15).toFixed(1);
+                              const desc = entry.weather[0].description;
+                              const day = new Date(entry.dt * 1000).toLocaleDateString("en-US", { weekday: "long" });
+                        %>
+                              <div class="forecast-item">
+                                <div class="icon-wrapper">
+                                  <img src="https://openweathermap.org/img/wn/<%= icon %>.png" alt="<%= desc %> icon">
+                                  <span><%= tempC %>&deg;C</span>
+                                </div>
+                                <p><%= day %></p>
+                                <p><%= desc %></p>
+                              </div>
+                        <%   }
+                          } else { %>
+                            <!-- Fallback content if forecast not available -->
+                            <div class="forecast-item">
+                              <div class="icon-wrapper">
+                                <img src="https://openweathermap.org/img/wn/02d.png">
+                                <span>__&deg;C</span>
+                              </div>
+                              <p>____</p>
+                              <p>____</p>
+                            </div>
+                        <% } %>
+                      </div>
+                      
+                      
+                    
+                    
+                </div>
+            </div>
+            <div class="weather-right">
+                <h2>Today's Highlights</h2>
+                <div class="highlights">
+                    <div class="card">
+                        <div class="card-head">
+                            <p>Air Quality Index</p>
+                            <%if(locals.air){%>
+                                <%const aqiMap = ['N/A', 'Good', 'Fair', 'Moderate', 'Poor', 'Very Poor'];%>
+                                <p class="air-index aqi-<%= air.main.aqi %>"><%= aqiMap[air.main.aqi] %></p>
+                            <%} else{%>
+                                <p class="air-index aqi-1">Good</p>
+                            <%}%>
+                            
+
+                        </div>
+                        <div class="air-indices">
+                            <i class="fa-solid fa-wind " style="font-size: 50px;"></i>
+                            <div class="item">
+                                <p>PM2.5</p>
+                                <%if(locals.air){%>
+                                    <h2><%=air.components.pm2_5%></h2>
+                                <%} else{%>
+                                    <h2>____</h2>
+                                <%}%>
+                                
+                            </div>
+                            <div class="item">
+                                <p>PM10</p>
+                                <%if(locals.air){%>
+                                    <h2><%=air.components.pm10%></h2>
+                                <%} else{%>
+                                    <h2>____</h2>
+                                <%}%>
+                            </div>
+                            <div class="item">
+                                <p>SO2</p>
+                                <%if(locals.air){%>
+                                    <h2><%=air.components.so2%></h2>
+                                <%} else{%>
+                                    <h2>____</h2>
+                                <%}%>
+                            </div>
+                            <div class="item">
+                                <p>CO</p>
+                                <%if(locals.air){%>
+                                    <h2><%=air.components.co%></h2>
+                                <%} else{%>
+                                    <h2>____</h2>
+                                <%}%>
+                            </div>
+                            <div class="item">
+                                <p>NO</p>
+                                <%if(locals.air){%>
+                                    <h2><%=air.components.no%></h2>
+                                <%} else{%>
+                                    <h2>____</h2>
+                                <%}%>
+                            </div>
+                            <div class="item">
+                                <p>NO2</p>
+                                <%if(locals.air){%>
+                                    <h2><%=air.components.no2%></h2>
+                                <%} else{%>
+                                    <h2>____</h2>
+                                <%}%>
+                            </div>
+                            <div class="item">
+                                <p>NH3</p>
+                                <%if(locals.air){%>
+                                    <h2><%=air.components.nh3%></h2>
+                                <%} else{%>
+                                    <h2>____</h2>
+                                <%}%>
+                            </div>
+                            <div class="item">
+                                <p>O3</p>
+                                <%if(locals.air){%>
+                                    <h2><%=air.components.o3%></h2>
+                                <%} else{%>
+                                    <h2>____</h2>
+                                <%}%>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-head">
+                            <p>Sunrise & Sunset</p>
+                        </div>
+                        <div class="sunrise-sunset">
+                            <div class="item">
+                                <div class="icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="64" height="64" fill="none">
+                                        <path d="M9.5 6.5C9.99153 5.9943 11.2998 4 12 4M14.5 6.5C14.0085 5.9943 12.7002 4 12 4M12 4V10" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                                        <path d="M18.3633 10.6357L16.9491 12.05" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round" />
+                                        <path d="M3 17H5" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round" />
+                                        <path d="M5.63657 10.6356L7.05078 12.0498" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round" />
+                                        <path d="M21 17H19" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round" />
+                                        <path d="M21 20H3" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round" />
+                                        <path d="M16 17C16 14.7909 14.2091 13 12 13C9.79086 13 8 14.7909 8 17" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round" />
+                                      </svg>
+                                </div>
+                                <div>
+                                    <p>Sunrise</p>
+                                    <%if(locals.weatherData){%>
+                                        <%const sunriseIST = new Date(weatherData.sys.sunrise * 1000).toLocaleString("en-IN", {timeZone: "Asia/Kolkata",hour: "2-digit",minute: "2-digit",hour12: true,});%>
+                                        <h2><%= sunriseIST %></h2>
+                                    <%} else{%>
+                                        <h2>____</h2>
+                                    <%}%>
+                                    
+                                </div>
+                            </div>
+                            <div class="item">
+                                <div class="icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="64" height="64" fill="none">
+                                        <path d="M12 4V10" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                        <path d="M9.5 7.5L12 10L14.5 7.5" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                        <path d="M18.3633 10.6357L16.9491 12.05" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+                                        <path d="M5.63657 10.6356L7.05078 12.0498" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+                                        <path d="M3 17H5" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+                                        <path d="M21 17H19" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+                                        <path d="M21 20H3" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+                                        <path d="M16 17C16 14.7909 14.2091 13 12 13C9.79086 13 8 14.7909 8 17" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+                                      </svg>
+                                      
+                                </div>
+                                <div>
+                                    <p>Sunset</p>
+                                    <%if(locals.weatherData){%>
+                                        <%const sunsetIST = new Date(weatherData.sys.sunset * 1000).toLocaleString("en-IN", {timeZone: "Asia/Kolkata",hour: "2-digit",minute: "2-digit",hour12: true,});%>
+                                        <h2><%= sunsetIST %></h2>
+                                    <%} else{%>
+                                        <h2>____</h2>
+                                    <%}%>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-head">
+                            <p>Humidity</p>
+                        </div>
+                        <div class="card-item">
+                            <i class="fa-solid fa-droplet fa-2x"></i>
+                            <%if(locals.weatherData){%>
+                                <h2 id="humidityVal"><%= weatherData.main.humidity %> %</h2>
+                            <%} else{%>
+                                <h2 id="humidityVal">____%</h2>
+                            <%}%>
+                            
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-head">
+                            <p>Pressure</p>
+                        </div>
+                        <div class="card-item">
+                            <i class="fa-solid fa-compass fa-2x"></i>
+                            <%if(locals.weatherData){%>
+                                <h2 id="pressureVal"><%= weatherData.main.pressure %> hPa</h2>
+                            <%} else{%>
+                                <h2 id="pressureVal">____hPa</h2>
+                            <%}%>
+                            
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-head">
+                            <p>Visibility</p>
+                        </div>
+                        <div class="card-item">
+                            <i class="fa-solid fa-eye fa-2x"></i>
+                            <%if(locals.weatherData){%>
+                                <h2 id="visibilityVal"><%= weatherData.visibility %> km</h2>
+                            <%} else{%>
+                                <h2 id="visibilityVal">____km</h2>
+                            <%}%>
+                            
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-head">
+                            <p>Wind Speed</p>
+                        </div>
+                        <div class="card-item">
+                            <i class="fa-solid fa-location-arrow fa-2x"></i>
+                            <%if(locals.weatherData){%>
+                                <h2 id="windSpeedVal"><%= weatherData.wind.speed %> m/s</h2>
+                            <%} else{%>
+                                <h2 id="windSpeedVal">____m/s</h2>
+                            <%}%>
+                            
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-head">
+                            <p>Feels Like</p>
+                        </div>
+                        <div class="card-item">
+                            <i class="fa-solid fa-temperature-three-quarters fa-2x"></i>
+                            <%if(locals.weatherData){%>
+                                <h2 id="feelsVal"><%= weatherData.main.feels_like %> &deg;C</h2>
+                            <%} else{%>
+                                <h2 id="feelsVal">____&deg;C</h2>
+                            <%}%>
+                            
+                        </div>
+                    </div>
+                </div>
+                <h2>Today at</h2>
+                <div class="hourly-forecast">
+                    <%if(locals.forecastHourly){
+                        let time=["9 AM","11 AM","1 PM","3 PM","5 PM","7 PM","9 PM","11 PM"];
+                        let count=0;
+                        for(let i=0;i<8;i++){%>
+                            <div class="card">
+                                <p><%= time[i] %></p>
+                                <img src="https://openweathermap.org/img/wn/<%= forecastHourly.list[count].weather[0].icon %>.png">
+                                <p><%= (forecastHourly.list[count].main.temp-273.15).toFixed(1) %> &deg;C</p>
+                            </div>
+                           <% count=count+2;
+                        }%>
+                    <%} else{
+                        for(let i=0;i<8;i++){%>
+                            <div class="card">
+                                <p>9 AM</p>
+                                <img src="https://openweathermap.org/img/wn/04d.png">
+                                <p>____&deg;C</p>
+                            </div>
+                        <%}%>
+                    <%}%>
+                    
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+    document.getElementById("locationBtn").addEventListener("click", function () {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(successCallback, errorCallback);
+        } else {
+            alert("Geolocation is not supported by your browser.");
+        }
+
+        function successCallback(position) {
+            const lat = position.coords.latitude;
+            const lon = position.coords.longitude;
+
+            document.getElementById("lat").value = lat;
+            document.getElementById("lon").value = lon;
+            
+
+            // Clear the city input if using coordinates
+            document.getElementById("city_input").value = "";
+
+            // Submit the form
+            document.querySelector(".weather-input").submit();
+        }
+
+        function errorCallback(error) {
+            alert("Error getting location: " + error.message);
+        }
+    });
+</script>
+
+
+</body>
+</html>
