@@ -1,31 +1,44 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Atmos-View</title>
-    <script src="https://kit.fontawesome.com/bfd673e750.js" crossorigin="anonymous"></script>
-    <link href='https://cdn.boxicons.com/fonts/basic/boxicons.min.css' rel='stylesheet'>
-    <link href="/styles.css" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Atmos-View</title>
+  <script src="https://kit.fontawesome.com/bfd673e750.js" crossorigin="anonymous"></script>
+  <link href='https://cdn.boxicons.com/fonts/basic/boxicons.min.css' rel='stylesheet'>
+  <link href="/styles.css" rel="stylesheet">
+  <style>
+    #searchBtn {
+      background-color: snow;
+      color: black;
+    }
+    #locationBtn {
+      background-color: skyblue;
+      color: white;
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h2>Weather</h2>
-            <form class="weather-input" method="post" action="/submit">
-                <input type="text" name="city" id="city_input" placeholder="Enter city">
+  <video id="bg-video" autoplay muted loop playsinline>
+    <source src="/videos/4.mp4" type="video/mp4">
+    Your browser does not support the video tag.
+  </video>
 
-                <input type="hidden" name="lat" id="lat">
-                <input type="hidden" name="lon" id="lon">
-
-                <button type="submit" id="searchBtn">
-                    <i class="fa-solid fa-magnifying-glass"></i> Search
-                </button>
-                <button type="button" id="locationBtn">
-                    <i class="fa-solid fa-location-crosshairs"></i> Current Location
-                </button>
-            </form>
-        </div>
+  <div class="container">
+    <div class="header">
+      <form class="weather-input" method="post" action="/submit">
+        <input type="text" name="city" id="city_input" placeholder="Type a city name">
+        <input type="hidden" name="lat" id="lat">
+        <input type="hidden" name="lon" id="lon">
+        <button type="submit" id="searchBtn">
+          <i class="fa-solid fa-magnifying-glass"></i> Get Weather
+        </button>
+        <button type="button" id="locationBtn">
+          <i class="fa-solid fa-location-crosshairs"></i> Use My Location
+        </button>
+      </form>
+      <h2>AtmosView - Weather Insights</h2>
+    </div>
         <div class="weather-data">
             <div class="weather-left">
                 <div class="card">
