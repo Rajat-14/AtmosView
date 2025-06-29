@@ -319,7 +319,7 @@
                         <div class="card-item">
                             <i class="fa-solid fa-temperature-three-quarters fa-2x"></i>
                             <%if(locals.weatherData){%>
-                                <h2 id="feelsVal"><%= weatherData.main.feels_like %> &deg;C</h2>
+                                <h2 id="feelsVal"><%= (weatherData.main.feels_like -273.15).toFixed(1)%> &deg;C</h2>
                             <%} else{%>
                                 <h2 id="feelsVal">____&deg;C</h2>
                             <%}%>
